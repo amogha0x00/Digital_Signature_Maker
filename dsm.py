@@ -22,8 +22,12 @@ if not exists(PATH_TO_SIGNATURE):
     quit()
 
 
-def make_sig(signature_org, lower_threshold, blur_amount):
-    ret, binary_sig = cv2.threshold(signature_org, lower_threshold, 255, cv2.THRESH_BINARY)
+def make_sig(signature_org, lower_threshold, blur_amount, auto=0):
+    if auto: # cv2.THRESH_BINARY = 0
+        auto = cv2.THRESH_OTSU # cv2.THRESH_OTSU = 8
+        lower_threshold = 0
+    ret, binary_sig = cv2.threshold(signature_org, lower_threshold, 255, auto)
+    
     if blur_amount > 0:
         blur_amount = 2*blur_amount + 1 # (2*n + 1)
         blur_binary_sig = cv2.medianBlur(binary_sig, blur_amount)
@@ -64,7 +68,7 @@ def make_show_sig(sig_file_name, lower_threshold=127, blur_amount=2, height=300,
     global signature_org
     signature_org = cv2.imread(sig_file_name, 2)
     if args.auto:
-        binary_sig , trans_sig = make_sig(signature_org, lower_threshold, blur_amount)
+        binary_sig , trans_sig = make_sig(signature_org, lower_threshold, blur_amount, auto=1)
         cv2.imwrite(sig_name + '_binary.png', binary_sig)
         cv2.imwrite(sig_name + '_trans.png', trans_sig)
         return 0
