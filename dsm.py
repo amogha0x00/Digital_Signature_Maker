@@ -35,13 +35,9 @@ def make_sig(signature_org, lower_threshold, blur_amount, auto=0):
         blur_binary_sig = binary_sig
 
     trans_sig = cv2.cvtColor(blur_binary_sig, cv2.COLOR_GRAY2BGRA)
-    for row in trans_sig:
-        for pixel in row:
-            if pixel[0]:
-                pixel[3] = 0
-            else:
-                pixel[3] = 255
-
+    alpha_channel = 255 - blur_binary_sig
+    trans_sig[:, :, 3] = alpha_channel
+    
     return blur_binary_sig, trans_sig
 
 def click_and_crop(event, x, y, flags, param):
