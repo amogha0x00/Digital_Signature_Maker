@@ -26,8 +26,12 @@ def make_sig(signature_org, lower_threshold, blur_amount, auto=0):
     if auto: # cv2.THRESH_BINARY = 0
         auto = cv2.THRESH_OTSU # cv2.THRESH_OTSU = 8
         lower_threshold = 0
-    ret, binary_sig = cv2.threshold(signature_org, lower_threshold, 255, auto)
-    
+
+    split_img = cv2.split(signature_org)
+    binary_sig = np.full_like(split_img[0], 255)
+    for color_channel in split_img[:3]:
+        binary_sig = cv2.bitwise_and(binary_sig, cv2.threshold(color_channel, lower_threshold, 255, auto)[1])
+
     if blur_amount > 0:
         blur_amount = 2*blur_amount + 1 # (2*n + 1)
         blur_binary_sig = cv2.medianBlur(binary_sig, blur_amount)
@@ -62,7 +66,7 @@ def click_and_crop(event, x, y, flags, param):
 def make_show_sig(sig_file_name, lower_threshold=127, blur_amount=2, height=300, width=800):
     sig_name = sig_file_name.split('.')[0]
     global signature_org
-    signature_org = cv2.imread(sig_file_name, 2)
+    signature_org = cv2.imread(sig_file_name)
     if args.auto:
         binary_sig , trans_sig = make_sig(signature_org, lower_threshold, blur_amount, auto=1)
         cv2.imwrite(sig_name + '_binary.png', binary_sig)
