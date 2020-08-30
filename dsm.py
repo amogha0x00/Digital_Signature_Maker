@@ -13,6 +13,13 @@ parser.add_argument('-a',
                     '--auto',
                     action='store_true',
                     help='make signature with default settings and save it')
+
+parser.add_argument('-c',
+                    '--color',
+                    dest='COLOR',
+                    type=str,
+                    default='',
+                    help='Set the color of the Signature, r - red, g - green, b - blue or rgb for white or any other combination.')
 args = parser.parse_args()
 
 PATH_TO_SIGNATURE = args.PATH
@@ -40,8 +47,11 @@ def make_sig(signature_org, lower_threshold, blur_amount, auto=0):
 
     trans_sig = cv2.cvtColor(blur_binary_sig, cv2.COLOR_GRAY2BGRA)
     alpha_channel = 255 - blur_binary_sig
+    blur_binary_sig = trans_sig.copy()
     trans_sig[:, :, 3] = alpha_channel
-    
+    color_map = {'r' : 2, 'g' : 1, 'b': 0}
+    for color in args.COLOR.lower():
+        trans_sig[:, :, color_map[color]], blur_binary_sig[:, :, color_map[color]] = 255, 255
     return blur_binary_sig, trans_sig
 
 def click_and_crop(event, x, y, flags, param):
