@@ -18,7 +18,7 @@ Take photo of your written signature on an unruled clean sheet of paper then tra
 
 ## Usage:
     
-    python dsm.py [-h] [-a] path_to_image
+    python dsm.py [-h] [-a] [-c COLOR] path_to_image
 
     positional arguments:
         path_to_image  the path to the signature image
@@ -26,7 +26,9 @@ Take photo of your written signature on an unruled clean sheet of paper then tra
     optional arguments:
         -h, --help     show this help message and exit
         -a, --auto     make signature with default settings and save it
-
+        -c COLOR, --color COLOR
+                        Set the color of the Signature, r - red, g - green, b - blue or rgb for white or any other
+                        combination.
     It saves 2 images one with white background named '$path_to_image' + '_binary.png'
     And other with transparent background named named '$path_to_image' + '_trans.png'
 
